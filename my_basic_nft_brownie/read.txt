@@ -1,0 +1,9 @@
+ipfs daemon
+
+brownie run scripts\advanced_collectible\create_metadata.py --network rinkeby
+brownie run scripts\advanced_collectible\set_tokenuri.py --network rinkeby
+
+https://testnets.opensea.io/assets/0xF742025E90736F0aFc965D6B9B93A88AAdd8813D/0
+https://testnets.opensea.io/assets/0xF742025E90736F0aFc965D6B9B93A88AAdd8813D/1
+https://testnets.opensea.io/assets/0xF742025E90736F0aFc965D6B9B93A88AAdd8813D/2
+https://testnets.opensea.io/assets/0xF742025E90736F0aFc965D6B9B93A88AAdd8813D/3

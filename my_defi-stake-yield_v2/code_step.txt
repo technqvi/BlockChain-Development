@@ -1,0 +1,169 @@
+
+brownie test tests\test_token_farm_unit.py --network development
+
+
+brownie run scripts\execute.py --network ganache-local
+brownie run scripts\execute.py --network development
+
+ganache-local
+brownie console --network ganache-local
+
+
+ganache-cli
+brownie console --network development
+
+brownie console --network kovan  / rinkby
+
+
+find address and json data at : D:\BC-World\BC-Dev\Web3_Python\my_defi_stake_brownie_all\my_defi-stake-yield_v2\build\deployments\map.json
+
+
+from  scripts.deploy import deploy_token_farm_jomox_token
+import scripts.helpful_scripts  as xhelp
+from web3 import Web3
+
+---- run on ganache-cli--------------------------
+
+defi_farm,jomox_token,weth_token,fau_token,deployer=deploy_token_farm_jomox_token()
+
+---- run on ganache-local--------------------------
+
+open gancahe clie as paticualar project (not quick)
+brownie run scripts\execute.py --network ganache-local
+
+defi_farm=TokenFarm[-1]
+
+jomox_token=JoMoXToken[-1]
+weth_token=MockWETH[-1]
+fau_token=MockDAI[-1]
+
+
+//kovan
+weth_token=Contract('0xd0a1e359811322d97991e03f863a0c30c2cf029c')
+
+
+
+-----------------run code each line------------------
+
+Web3.fromWei (defi_farm.getPercentRewardTokenToStaker(),'ether')
+
+
+
+owner=accounts[0]      // dev or ganache
+owner=  owner=xhelp.get_account()  // kovan
+owner  
+
+Web3.fromWei(jomox_token.balanceOf(owner),'ether')
+Web3.fromWei (jomox_token.balanceOf(defi_farm),'ether')
+
+
+
+Web3.fromWei(fau_token.balanceOf(owner),'ether')
+Web3.fromWei (weth_token.balanceOf(owner),'ether')
+
+
+fau_no_stake=Web3.toWei(10000, "ether")
+tx_approve=fau_token.approve(defi_farm.address,fau_no_stake,{'from': owner})
+tx_stake_fau=defi_farm.stakeToken(fau_no_stake,fau_token.address,{'from': owner})
+tx_stake_fau.info()
+
+Web3.fromWei (defi_farm.getBalaneTokensStakedByUser(owner,fau_token),'ether')
+Web3.fromWei (defi_farm.getUserSingleTokenValue(owner,fau_token),'ether')
+Web3.fromWei (fau_token.balanceOf(owner),'ether')
+
+
+deweth_no_stake=Web3.toWei(20000, "ether")
+weth_token.approve(defi_farm.address,weth_no_stake,{'from': owner})
+tx_stake_weth=defi_farm.stakeToken(weth_no_stake,weth_token.address,{'from': owner})
+tx_stake_weth.info()
+
+Web3.fromWei (defi_farm.getBalaneTokensStakedByUser(owner,weth_token),'ether')
+Web3.fromWei (defi_farm.getUserSingleTokenValue(owner,weth_token),'ether')
+Web3.fromWei (weth_token.balanceOf(owner),'ether')
+
+Web3.fromWei (defi_farm.getUserTotalValue(owner),'ether')
+
+=====================================================================
+
+=====issue==========================
+
+Web3.fromWei (jomox_token.balanceOf(defi_farm),'ether')
+
+issue_tx =defi_farm.issueTokens({"from": owner})
+issue_tx.events
+issue_tx.events["DistributeReward"]
+
+jomox_token.balanceOf(owner)
+jomox_token.balanceOf(user)
+
+jomox_token.balanceOf(defi_farm)
+
+
+
+==============unstake=============
+==============unstake ALL=============
+Web3.fromWei (fau_token.balanceOf(owner),'ether')
+Web3.fromWei (defi_farm.getBalaneTokensStakedByUser(owner,fau_token),'ether')
+
+tx2_unstake_fau=defi_farm.unstakeAllToken(fau_token.address,{'from': owner})
+Web3.fromWei (defi_farm.getBalaneTokensStakedByUser(owner,fau_token),'ether')
+Web3.fromWei (fau_token.balanceOf(owner),'ether')
+
+
+==============unstake PATIAL 50%=============
+Web3.fromWei (weth_token.balanceOf(owner),'ether')
+Web3.fromWei (defi_farm.getBalaneTokensStakedByUser(owner,weth_token),'ether')
+
+tx2_unstake_weth=defi_farm.unstakePartialToken(weth_no_stake/2,weth_token.address,{'from': owner})
+Web3.fromWei (defi_farm.getBalaneTokensStakedByUser(owner,weth_token),'ether')
+Web3.fromWei (weth_token.balanceOf(owner),'ether')
+
+
+tx2_unstake_weth=defi_farm.unstakeAllToken(weth_token.address,{'from': owner})
+==================================================================================
+
+
+
+
+
+
+=====================user2===============================
+#User1
+user=accounts[1]
+fau2_no_stake=Web3.toWei(20000, "ether")
+Web3.fromWei(fau_token.balanceOf(owner),'ether')
+Web3.fromWei(fau_token.balanceOf(user),'ether')
+
+fau_token.transfer(user,fau2_no_stake,{'from': owner})
+
+
+weth2_no_stake=Web3.toWei(60000, "ether")
+Web3.fromWei(weth_token.balanceOf(owner),'ether')
+Web3.fromWei(weth_token.balanceOf(user),'ether')
+
+weth_token.transfer(user,weth2_no_stake,{'from': owner})
+
+
+
+fau_token.approve(defi_farm.address,fau2_no_stake,{'from': user})
+tx2_stake_fau=defi_farm.stakeToken(fau2_no_stake,fau_token.address,{'from': user})
+
+Web3.fromWei (defi_farm.getBalaneTokensStakedByUser(user,fau_token),'ether')
+Web3.fromWei (fau_token.balanceOf(user),'ether')
+
+
+
+weth_token.approve(defi_farm.address,weth2_no_stake,{'from': user})
+tx2_stake_weth=defi_farm.stakeToken(weth2_no_stake,weth_token.address,{'from': user})
+
+Web3.fromWei (defi_farm.getBalaneTokensStakedByUser(user,weth_token),'ether')
+Web3.fromWei (weth_token.balanceOf(user),'ether')
+
+
+Web3.fromWei (defi_farm.getUserTotalValue(user),'ether')
+
+jomox_token.balanceOf(user)
+========================================================================
+
+
+

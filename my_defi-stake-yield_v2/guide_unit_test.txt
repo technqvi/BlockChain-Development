@@ -1,0 +1,166 @@
+from brownie import network,exceptions
+import pytest
+import scripts.helpful_scripts as xhelp
+import scripts.deploy as xdeploy
+
+
+def test_set_price_feed_contract():
+    # arrnage
+   if network.show_active() not in xhelp.LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+       pytest.skip("Only for local testing")
+
+   owner=xhelp.get_account()
+   unknown_account=xhelp.get_account(index=1)
+   
+   token_farm,jomox_token=xdeploy.deploy_token_farm_jomox_token()
+   
+   # Act
+   eth_usd_price=xhelp.get_contract("eth_usd_price_feed")
+   #sol: setPriceFeedContract(address _token, address _priceFeed)
+   token_farm.setPriceFeedContract(jomox_token.address,eth_usd_price.address,{"from":owner})
+   print("Both address")
+   print(jomox_token.address)
+   print(eth_usd_price.address)
+   # Assert
+   assert  token_farm.tokenPriceFeedMapping(jomox_token.address)==eth_usd_price.address
+   with pytest.raises(exceptions.VirtualMachineError):
+        token_farm.setPriceFeedContract(jomox_token.address,eth_usd_price.address,{"from":unknown_account})
+
+
+def test_stake_tokens(amount_staked):
+    # Arrange
+    if network.show_active() not in xhelp.LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        pytest.skip("Only for local testing!")
+    owner = xhelp.get_account()
+
+    token_farm,jomox_token=xdeploy.deploy_token_farm_jomox_token()
+
+    # https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#IERC20-approve-address-uint256-
+    jomox_token.approve(token_farm.address,amount_staked,{"from": owner})
+
+    # sol: function stakeToken(uint256 _amount, address _token) public
+    token_farm.stakeToken(amount_staked,jomox_token.address,{"from":owner})
+    print(f"{owner.address} staked : {amount_staked}")
+
+    # sol: mapping(address=>mapping(address=>uint256) ) public stakingBalance;
+    assert token_farm.stakingBalance(jomox_token.address,owner.address)==amount_staked
+    # sol: mapping(address=>uint256) public uniqueTokensStaked;
+    assert token_farm.uniqueTokensStaked(owner.address)==1
+    # sol: address[] public stakers
+    assert  token_farm.stakers(0)==owner.address
+
+    
+
+    return token_farm,jomox_token
+    
+def test_issue_token(amount_staked):
+    if network.show_active() not in xhelp.LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        pytest.skip("Only for local testing!")
+    owner = xhelp.get_account()
+
+    token_farm,jomox_token=test_stake_tokens(amount_staked)
+    print("issuing_token")
+    #https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#IERC20-balanceOf-address-
+    starting_balance=jomox_token.balanceOf(owner.address)
+    print(f"starting_balance : {starting_balance}")
+    #   constructor() ERC20("JoMoX Token", "JOMOX") {
+    #     _mint(msg.sender, 1000000000000000000000000);
+    # }
+    # sol: function issueTokens() public onlyOwner
+    token_farm. issueTokens({"from":owner})
+
+    print(f"Init price value {xhelp.INITIAL_PRICE_FEED_VALUE}")
+
+    ending_balance=jomox_token.balanceOf(owner.address)
+    print(f"ending_balance : {ending_balance}")
+
+    # Arrange
+    # we are staking 1 jomox == in price to 1 eth
+    # if we get 2,000 jomox in reward
+    # since the price of eth is $2,000
+    assert (
+        ending_balance==starting_balance+xhelp.INITIAL_PRICE_FEED_VALUE
+    )
+    # print out
+    # assert False
+
+# review detail 18/4/22
+def test_get_user_total_value_with_different_tokens(amount_staked, random_erc20):
+    # Arrange
+    if network.show_active() not in xhelp. LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        pytest.skip("Only for local testing!")
+    account = xhelp.get_account()
+    # get  object from the first stake
+    token_farm, jomox_token = test_stake_tokens(amount_staked)
+    
+    # Act
+    # stake new token  approve==> stake==> get your worth in  pool           
+    token_farm.addAllowedToken(random_erc20.address, {"from": account})
+    
+    # Let' assuse the price of x_random erc20 is the same as dai
+    token_farm.setPriceFeedContract(
+        random_erc20.address, xhelp.get_contract("eth_usd_price_feed"), {"from": account}
+    )
+    
+    random_erc20_stake_amount = amount_staked * 2
+    random_erc20.approve(
+        token_farm.address, random_erc20_stake_amount, {"from": account}
+    )
+    # secound stake
+    token_farm.stakeToken(
+        random_erc20_stake_amount, random_erc20.address, {"from": account}
+    )
+    # Assert
+    # first staking by invoking test_stake_tokens 1*2000(price) ETH +  what you want to stake (2x1)*2000(price)=4000
+    # total is 2000+4000=6000 = 2000*3
+    total_value = token_farm.getUserTotalValue(account.address)
+    price_value=xhelp.INITIAL_PRICE_FEED_VALUE*3
+    print(f"total value : {total_value} = value price {price_value}")
+
+    assert total_value == price_value
+
+
+def test_get_token_value():
+    # Arrange
+    if network.show_active() not in xhelp.LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        pytest.skip("Only for local testing!")
+    token_farm, jomox_token = xdeploy.deploy_token_farm_jomox_token()
+    # Act / Assert
+    assert token_farm.getTokenValue(jomox_token.address) == (
+       xhelp. INITIAL_PRICE_FEED_VALUE,
+       xhelp. DECIMALS,
+    )
+
+
+def test_unstake_tokens(amount_staked):
+    # Arrange
+    if network.show_active() not in xhelp.LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        pytest.skip("Only for local testing!")
+    account =xhelp. get_account()
+    token_farm, jomox_token = test_stake_tokens(amount_staked)
+    # Act
+    token_farm.unstakeToken( jomox_token, {"from": account})
+    assert jomox_token.balanceOf(account.address) == xdeploy.KEPT_BALANCE
+    assert token_farm.stakingBalance( jomox_token.address, account.address) == 0
+    assert token_farm.uniqueTokensStaked(account.address) == 0
+
+
+def test_add_allowed_tokens():
+    # Arrange
+    if network.show_active() not in xhelp.LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        pytest.skip("Only for local testing!")
+    account =xhelp. get_account()
+    
+    token_farm, jomox_token =xdeploy.deploy_token_farm_jomox_token()
+    # Act
+    token_farm.addAllowedToken(jomox_token.address, {"from": account})
+    # Assert
+    assert token_farm.allowedTokens(0) == jomox_token.address
+    with pytest.raises(exceptions.VirtualMachineError):
+        non_owner = xhelp.get_account(index=1)
+        token_farm.addAllowedToken(jomox_token.address, {"from": non_owner})
+
+
+
+
+   

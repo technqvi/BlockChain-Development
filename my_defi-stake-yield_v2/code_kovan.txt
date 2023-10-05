@@ -1,0 +1,107 @@
+D:\BC-World\BC-Dev\Web3_Python\my_defi_stake_brownie_all\my_defi-stake-yield_v2>brownie console --network kovan
+INFO: Could not find files for the given pattern(s).
+Brownie v1.18.1 - Python development framework for Ethereum
+
+MyDefiStakeYieldV2Project is the active project.
+Brownie environment is ready.
+>>> from  scripts.deploy import deploy_token_farm_jomox_token
+import scripts.helpful_scripts  as xhelp
+from web3 import Web3
+>>> owner=xhelp.get_account()
+Your account are on kovan
+>>> owner
+<LocalAccount '0x9130aC7AeB7e74E7C3fc64B315DbD0EcAFe69e63'>
+>>> defi_farm=TokenFarm[-1]
+>>> defi_farm
+<TokenFarm Contract '0x294ecDb3BadC9E889d4abc8E80D3527647be2C10'>
+
+
+>>> weth_token=Contract('0xd0a1e359811322d97991e03f863a0c30c2cf029c')
+>>> weth_token
+<MockWETH Contract '0xd0A1E359811322d97991E03f863a0C30C2cF029C'>
+>>> fau_token=Contract('0xFab46E002BbF0b4509813474841E0716E6730136')
+>>> fau_token
+<MockDAI Contract '0xFab46E002BbF0b4509813474841E0716E6730136'>
+>>> weth_token.balanceOf(owner)
+2000000000000000000
+>>> fau_token.balanceOf(owner)
+2200000000000000000000
+>>> tx_approve=fau_token.approve(defi_farm.address,300000000000000000000, {'from': owner})
+Transaction sent: 0x4c9c14c90e1b4d3f1fa7af27e934ef6ea343f46598adebed7e9944a6c621ca1f
+  Gas price: 2.500000007 gwei   Gas limit: 50810   Nonce: 246
+  MockDAI.approve confirmed   Block: 33070421   Gas used: 46191 (90.91%)
+
+>>> fau_token.allowance(owner,defi_farm)
+300000000000000000000
+>>> tx_stake=defi_farm.stakeToken(300000000000000000000,fau_token.address, {'from': owner})
+Transaction sent: 0xd062268541dc32e0523b4e560e95307efaf096e9b5308bab231c3c7e3cfe9a7b
+  Gas price: 2.500000007 gwei   Gas limit: 174903   Nonce: 247
+  TokenFarm.stakeToken confirmed   Block: 33070454   Gas used: 154203 (88.16%)
+
+>>> tx_stake.info()
+Transaction was Mined 
+--------------------- 
+Tx Hash: 0xd062268541dc32e0523b4e560e95307efaf096e9b5308bab231c3c7e3cfe9a7b
+From: 0x9130aC7AeB7e74E7C3fc64B315DbD0EcAFe69e63
+To: 0x294ecDb3BadC9E889d4abc8E80D3527647be2C10
+Value: 0
+Function: TokenFarm.stakeToken
+Block: 33070454
+Gas Used: 154203 / 174903 (88.2%)
+
+Events In This Transaction
+--------------------------
+└── FaucetToken (0xFab46E002BbF0b4509813474841E0716E6730136)
+    ├── Transfer
+    │   ├── from: 0x9130aC7AeB7e74E7C3fc64B315DbD0EcAFe69e63
+    │   ├── to: 0x294ecDb3BadC9E889d4abc8E80D3527647be2C10
+    │   └── value: 300000000000000000000
+    └── Approval
+        ├── owner: 0x9130aC7AeB7e74E7C3fc64B315DbD0EcAFe69e63
+        ├── spender: 0x294ecDb3BadC9E889d4abc8E80D3527647be2C10
+        └── value: 0
+
+>>> list_staker=defi_farm.listAllStaker()
+>>> list_staker
+("0x9130aC7AeB7e74E7C3fc64B315DbD0EcAFe69e63")
+>>> my_fau_staked=defi_farm.getBalaneTokensStakedByUser(owner,fau_token)
+>>> my_fau_staked
+300000000000000000000
+>>> my_fau_value_stake=defi_farm.getUserSingleTokenValue(owner,fau_token)
+>>> my_fau_value_stake
+299820000000000000000
+>>> tx_issue=defi_farm.issueTokens({'from': owner})
+Transaction sent: 0x2a1c9ec991f53cad5263d8aa4a6d055f21c3d83651b9d37003e8905d111aa5a4
+  Gas price: 2.500000007 gwei   Gas limit: 197800   Nonce: 248
+  TokenFarm.issueTokens confirmed   Block: 33070516   Gas used: 179819 (90.91%)
+
+>>> tx_issue.info()
+Transaction was Mined 
+--------------------- 
+Tx Hash: 0x2a1c9ec991f53cad5263d8aa4a6d055f21c3d83651b9d37003e8905d111aa5a4
+From: 0x9130aC7AeB7e74E7C3fc64B315DbD0EcAFe69e63
+To: 0x294ecDb3BadC9E889d4abc8E80D3527647be2C10
+Value: 0
+Function: TokenFarm.issueTokens
+Block: 33070516
+Gas Used: 179819 / 197800 (90.9%)
+
+Events In This Transaction
+--------------------------
+├── JoMo Token V22 (0x04ABF38719f57Ca8500eBFf67f0B10EBFe4E1c5e)
+│   └── Transfer
+│       ├── from: 0x294ecDb3BadC9E889d4abc8E80D3527647be2C10
+│       ├── to: 0x9130aC7AeB7e74E7C3fc64B315DbD0EcAFe69e63
+│       └── value: 2998200000000000000
+│
+└── TokenFarm (0x294ecDb3BadC9E889d4abc8E80D3527647be2C10)
+    └── DistributeReward
+        ├── reward_token: 0x04ABF38719f57Ca8500eBFf67f0B10EBFe4E1c5e
+        ├── bal_rewardToken_before: 1000000000000000000000000
+        ├── all_totalValue: 299820000000000000000
+        ├── percent_reward_token_distributed: 1
+        ├── all_reward_token_distributed: 2998200000000000000
+        ├── bal_rewardToken_after: 999997001800000000000000
+        └── timestamp: 1659466420
+
+>>>
