@@ -12,7 +12,7 @@ This repository involved in building Web3 Application  and SmartContract on Ethe
 #### [my_fund_me_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_fund_me_brownie)
 #### [my_lottery_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_lottery_brownie)
 #### [my_storage_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_storage_brownie)
-#### [Additonal Repository : Javascript Web3 and SmartContract](https://github.com/peter-wg2535) 
+### [Additonal Repository : Javascript Web3 and SmartContract](https://github.com/peter-wg2535) 
 
 ## Reference
 * Web3 Framework
