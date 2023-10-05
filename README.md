@@ -6,13 +6,13 @@ This repository involved in building Web3 Application  and SmartContract on Ethe
 * [Blockchain, Solidity, and Full Stack Web3 Development with JavaScript ](https://github.com/smartcontractkit/full-blockchain-solidity-course-js)
 
 ## Sub-Repository
-### [my_defi-stake-yield_v2](https://github.com/technqvi/BlockChain-Development/tree/main/my_defi-stake-yield_v2)
-### [my_aave_v2_brownie_trong](https://github.com/technqvi/BlockChain-Development/tree/main/my_aave_v2_brownie_trong)
-### [my_basic_nft_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_basic_nft_brownie)
-### [my_fund_me_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_fund_me_brownie)
-### [my_lottery_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_lottery_brownie)
-### [my_storage_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_storage_brownie)
-### [Additonal Repository : Javascript Web3 and SmartContract](https://github.com/peter-wg2535) 
+#### [my_defi-stake-yield_v2](https://github.com/technqvi/BlockChain-Development/tree/main/my_defi-stake-yield_v2)
+#### [my_aave_v2_brownie_trong](https://github.com/technqvi/BlockChain-Development/tree/main/my_aave_v2_brownie_trong)
+#### [my_basic_nft_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_basic_nft_brownie)
+#### [my_fund_me_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_fund_me_brownie)
+#### [my_lottery_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_lottery_brownie)
+#### [my_storage_brownie](https://github.com/technqvi/BlockChain-Development/tree/main/my_storage_brownie)
+#### [Additonal Repository : Javascript Web3 and SmartContract](https://github.com/peter-wg2535) 
 
 ## Reference
 * Web3 Framework
